@@ -17,6 +17,7 @@ record = []
 isLine = False
 recording = False
 showing = False
+hueRecal = False
 
 lastCx = -1
 lastCy = -1
@@ -109,6 +110,27 @@ def draw_contours(img, contourSet):
             lastCy = cy
     return img
 
+def displayText():
+    global img
+    cv2.putText(img, "Click an object to start tracking it", (30,int(img.shape[0]-30)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))
+    cv2.putText(img, "Press q to quit", (30,30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))      
+    if isLine:
+        cv2.putText(img, "Press t to turn off line tracking", (30,50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))
+    else:
+        cv2.putText(img, "Press t to turn on line tracking", (30,50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))
+    if recording:
+        cv2.putText(img, "Press r to stop recording", (30,70), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))
+    else:
+        cv2.putText(img, "Press r to start recording", (30, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))
+    cv2.putText(img, "Press c to clear lines and record", (30,90), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))
+        
+    if hueRecal:
+        cv2.putText(img, "Press b to disable real-time hsv recalibration for the selected object", (30,110), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))
+    else:
+        cv2.putText(img, "Press b to enable real-time hsv recalibration for the selected object", (30, 110), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))
+        cv2.putText(img, "Press h to recalibrate hsv now", (30,130), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255))
+    
+
 #The actual script
 
 vidCap = cv2.VideoCapture(0)
@@ -136,7 +158,7 @@ while True:
                 
             lastMouseClickX = -1
             lastMouseClickY = -1
-        elif x>-1 and chr(x)=="q":
+        if x>-1 and chr(x)=="q":
             break
         elif x>-1 and chr(x)=="m":
             hTracklist.pop(-1)
@@ -145,11 +167,12 @@ while True:
             firstRunOfLoop = False
         setOfContours, hsv = process_image(img)
         sortedSetOfContours = sort_contours(setOfContours)
-        img = draw_contours(img, sortedSetOfContours)
-        cv2.imshow('Webcam', img)        
+        img = draw_contours(img, sortedSetOfContours)       
     else:
         selected = -1
-        cv2.imshow('Webcam', img)
+    displayText()
+    cv2.imshow('Webcam', img)
+    
 vidCap.release()
 cv2.destroyAllWindows()        
     
