@@ -10,6 +10,7 @@ sTracklist = [0]
 vTracklist = [0]
 
 counter = 0
+selected = 0
 
 line = []
 record = []
@@ -129,6 +130,7 @@ while True:
         img = draw_contours(img, sortedSetOfContours)
         cv2.imshow('Webcam', img)        
     else:
+        selected = -1
         cv2.imshow('Webcam', img)
 vidCap.release()
 cv2.destroyAllWindows()        
