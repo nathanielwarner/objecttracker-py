@@ -17,6 +17,8 @@ isLine = False
 recording = False
 showing = False
 
+firstRunOfLoop = True
+
 #mouse callback function
 
 def mouse_handle(event,x,y,flags,param):
@@ -117,10 +119,11 @@ while True:
             lastMouseClickY = -1
         elif x>-1 and chr(x)=="q":
             break
-        elif x>-1 and chr(x)=="m":
+        elif (x>-1 and chr(x)=="m") or firstRunOfLoop:
             hTracklist.pop(-1)
             sTracklist.pop(-1)
             vTracklist.pop(-1)
+            firstRunOfLoop = False
         setOfContours, hsv = process_image(img)
         sortedSetOfContours = sort_contours(setOfContours)
         img = draw_contours(img, sortedSetOfContours)
