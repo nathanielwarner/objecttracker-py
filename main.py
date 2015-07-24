@@ -1,3 +1,4 @@
+#ur majur legue scrub
 import cv2
 import numpy as np
 #Global variables
