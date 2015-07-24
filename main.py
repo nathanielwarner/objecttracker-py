@@ -1,5 +1,3 @@
-# This is a test
-
 import cv2
 import numpy as np
 #Global variables
@@ -98,30 +96,36 @@ cv2.setMouseCallback('Webcam', mouse_handle)
 
 while True:
     ret, img = vidCap.read()
-    setOfContours, hsv = process_image(img)
-    sortedSetOfContours = sort_contours(setOfContours)
-    img = draw_contours(img, sortedSetOfContours)
-    cv2.imshow('Webcam', img)
     x = cv2.waitKey(10)
-    if lastMouseClickX != -1:
-        (hTrackTemp, sTrackTemp, vTrackTemp) = hsv[lastMouseClickY][lastMouseClickX]
-        if counter==0:
-            hTracklist.pop(0)
-            sTracklist.pop(0)
-            vTracklist.pop(0)
-            counter = counter + 1
+    if not len(hTracklist)==0 or lastMouseClickX != -1 or (x>-1 and chr(x)=='q'):
         
-        hTracklist.append(hTrackTemp)
-        sTracklist.append(sTrackTemp)
-        vTracklist.append(vTrackTemp)
+        
+        if lastMouseClickX != -1:
+            (hTrackTemp, sTrackTemp, vTrackTemp) = hsv[lastMouseClickY][lastMouseClickX]
+            if counter==0:
+                hTracklist.pop(0)
+                sTracklist.pop(0)
+                vTracklist.pop(0)
+                counter = counter + 1
             
-        lastMouseClickX = -1
-        lastMouseClickY = -1
-    elif x>-1 and chr(x)=="q":
-        break
-    elif x>-1 and chr(x)=="m" and len(hTracklist)>1:
-        hTracklist.pop(-1)
-        sTracklist.pop(-1)
-        vTracklist.pop(-1)
+            hTracklist.append(hTrackTemp)
+            sTracklist.append(sTrackTemp)
+            vTracklist.append(vTrackTemp)
+                
+            lastMouseClickX = -1
+            lastMouseClickY = -1
+        elif x>-1 and chr(x)=="q":
+            break
+        elif x>-1 and chr(x)=="m":
+            hTracklist.pop(-1)
+            sTracklist.pop(-1)
+            vTracklist.pop(-1)
+        setOfContours, hsv = process_image(img)
+        sortedSetOfContours = sort_contours(setOfContours)
+        img = draw_contours(img, sortedSetOfContours)
+        cv2.imshow('Webcam', img)        
+    else:
+        cv2.imshow('Webcam', img)
 vidCap.release()
-cv2.destroyAllWindows()
+cv2.destroyAllWindows()        
+    
