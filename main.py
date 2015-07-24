@@ -18,7 +18,8 @@ isLine = False
 recording = False
 showing = False
 
-firstRunOfLoop = True
+lastCx = -1
+lastCy = -1
 
 #mouse callback function
 
@@ -76,19 +77,36 @@ def sort_contours(contourList):
 #Draws the boxs and centers on the image using the set of contours
 
 def draw_contours(img, contourSet):
+    global lastCx
+    global lastCy
+    
     for i in range(len(contourSet)):
         if contourSet[i] != []:
-            temp = contourSet[i][-1]
-            x,y,w,h = cv2.boundingRect(temp)
-            M = cv2.moments(temp)
-            cx = 0
-            cy = 0
+            j = 0
+            mustProceed = False
+            while True:
+                try:
+                    temp = contourSet[i][-1-j]
+                except IndexError:
+                    temp = contourSet[i][-1]
+                    mustProceed = True            
+                temp = contourSet[i][-1]
+                x,y,w,h = cv2.boundingRect(temp)
+                M = cv2.moments(temp)
+                cx = 0
+                cy = 0
             
-            if(not M['m00']==0):
-                cx = int(M['m10']/M['m00'])
-                cy = int(M['m01']/M['m00'])
+                if(not M['m00']==0):
+                    cx = int(M['m10']/M['m00'])
+                    cy = int(M['m01']/M['m00'])
+                if abs(cx-lastCx < 65) or lastCx == -1 or mustProceed:
+                    if abs(cy-lastCy < 65) or lastCy == -1 or mustProceed:
+                        break  
+                j+=1
             img = cv2.circle(img, (cx, cy), 10, (255, 255, 0))
             img = cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0),2)
+            lastCx = cx
+            lastCy = cy
     return img
 
 #The actual script
@@ -120,7 +138,7 @@ while True:
             lastMouseClickY = -1
         elif x>-1 and chr(x)=="q":
             break
-        elif (x>-1 and chr(x)=="m") or firstRunOfLoop:
+        elif x>-1 and chr(x)=="m":
             hTracklist.pop(-1)
             sTracklist.pop(-1)
             vTracklist.pop(-1)
